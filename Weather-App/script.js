@@ -26,7 +26,27 @@ let weather = {
     },
     search: function() {
         this.fetchWeather(document.querySelector(".search-bar").value);
-    }
+    },
+    fetchCities: function() {
+        fetch("cities.txt") // Update the file path if needed
+            .then((response) => response.text())
+            .then((data) => this.populateCityList(data));
+    },
+
+    populateCityList: function(data) {
+        const cityList = data.split("\n");
+        const datalist = document.getElementById("cities");
+
+        cityList.forEach((city) => {
+            const option = document.createElement("option");
+            option.value = city.trim();
+            datalist.appendChild(option);
+        });
+    },
+};
+
+window.onload = function() {
+    weather.fetchCities();
 };
 
 document.querySelector(".search button").addEventListener("click", function() {
@@ -38,3 +58,16 @@ document.querySelector(".search-bar").addEventListener("keyup", function(event) 
         weather.search();
     }
 })
+
+document.querySelector(".search-bar").addEventListener("input", function() {
+    const input = this.value.toLowerCase();
+    const options = document.querySelectorAll("#cities option");
+
+    options.forEach((option) => {
+        if (option.value.toLowerCase().indexOf(input) !== -1) {
+            option.style.display = "block";
+        } else {
+            option.style.display = "none";
+        }
+    });
+});
